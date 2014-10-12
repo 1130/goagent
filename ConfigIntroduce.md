@@ -15,34 +15,37 @@
     
     #GAE服务端的配置
     [gae]
-    #你的Google app engine AppID,也就是服务器部署的APPID，配置多ID用|隔开
+    #是否启用 GAE 服务端。
+    enable = 1
+    #你的 Google Appengine AppID, 也就是服务器部署的 APPID，配置多 ID 用|隔开
     appid = goagent
-    #密码,默认为空,你可以在server目录的wsgi.py设定,如果设定了,此处需要与wsgi,py保持一致
+    #密码,默认为空,你可以在 server 目录的 gae.py 设定,如果设定了,此处需要与 gae.py 保持一致
     password = 123456
     #服务端路径,一般不用修改,如果不懂也不要修改.
-    path = /2
+    path = /_gh/
     #使用http还是https(SSL加密传输)连接至GAE
     mode = https
-    #填ipv6则使用[profile/ipv6]，默认ipv4使用[profile/ipv4]设置
-    #此项设置意义与之前版本不同。非IPv6环境无需考虑，请勿随意修改
-    profile = ipv4
+    #是否启用 ipv6
+    ipv6 = 0
     #ip评优算法每次选出的ip数量
-    window = 7
+    window = 6
     #是否缓存ip评优算法生成的临时连接
     cachesock = 1
-    #是否使用http/1.1的keepalive功能
+    #连接 ip 后是否使用 http HEAD 请求测试, 启用可以更好的测试该 ip 的质量。
+    headfirst = 1
+    #是否使用 http/1.1 的 keepalive 功能
     keepalive = 0
     #是否开启流量混淆
     obfuscate = 0
-    #是否通过pagespeed服务中转访问GAE
+    #是否通过 pagespeed 服务中转访问 GAE
     pagespeed = 0
     #是否对服务器证书进行验证
     validate = 0
     #是否打开透明代理功能（和iptables配合使用）
     transport = 0
-    # 如果设置为 rc4 则开启rc4加密，需在password设置密码，否则不开启，一般mode为https时无需开启
+    # 如果设置为 rc4 则开启 rc4 加密，需在 password 设置密码，否则不开启，一般mode为https时无需开启
     options =
-    #根据IP所在地区设置是否直连，比如regions = cn|jp可以让国内和日本的网站走直连。更多国家请见http://dev.maxmind.com/geoip/legacy/codes/iso3166/
+    #根据IP所在地区设置是否直连，比如 regions = cn|jp 可以让国内和日本的网站走直连。更多国家请见 <http://dev.maxmind.com/geoip/legacy/codes/iso3166/>
     regions =
     #每次urlfetch最大返回的文件大小
     maxsize = 2097152
@@ -54,9 +57,16 @@
     google_talk = talk.google.com|talk.l.google.com|talkx.l.google.com
     google_ipv6 = ipv6.google.com
     
-    # 匹配的会使用crlf并且直连，=后留空则使用远程DNS解析，也可以手动指定IP防止因解析失败而无法使用，将IP写等号后面。
-    # google_hk则表示使用[iplist]中的google_hk下的IP，google_cn则表示使用[iplist]中的google_cn下的IP
-    [profile/ipv4]
+    # 匹配规则，支持 host 配置， host 后缀匹配，和 url 正则匹配
+    # 匹配规则有： 1. withgae 优先走 gae
+    #              2. withphp 优先走 php 
+    #              3. direct 直连
+    #              4. fakehttps 使用 goagent 证书替换网站本身证书
+    #              5. nofakehttps 禁用 goagent 证书替换网站本身证书
+    #              6. forcehttps 强制 http 连接跳转到 https 网址
+    #              7. noforcehttps 禁用 http 连接跳转到 https 网址
+    #              8. google_* 使用 iplist 提供的地址直连
+    [profile]
     play.google.com = withgae
     wenda.google.com.hk = withgae
     clients.google.com = withgae
@@ -105,29 +115,6 @@
     ; .youtube.com = google_hk
     ; .googlevideo.com =
     
-    [profile/ipv6]
-    dns = 2001:4860:4860::8888|2001:4860:4860::8844|2001:470:20::2
-    play.google.com = withgae
-    talk.google.com =
-    talk.l.google.com =
-    talkx.l.google.com =
-    .google.com = google_ipv6
-    .googleusercontent.com = google_ipv6
-    .googleapis.com = google_ipv6
-    .google-analytics.com = google_ipv6
-    .googlecode.com = google_ipv6
-    .google.com.hk = google_ipv6
-    .googlegroups.com = google_ipv6
-    .googlesource.com = google_ipv6
-    .appspot.com = google_ipv6
-    .android.com = google_ipv6
-    .dropbox.com:443 =
-    .box.com:443 =
-    .copy.com:443 =
-    .ytimg.com = google_ipv6
-    ; .youtube.com =
-    ; .googlevideo.com =
-    ; https?://www\.youtube\.com/watch = google_hk
     
     #代理自动配置脚本(Proxy auto-config)设定
     [pac]
